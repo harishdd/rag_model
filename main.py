@@ -35,7 +35,7 @@ async def get_document_count():
 async def delete_all_documents():
     """API to delete all stored documents from ChromaDB"""
     db = rag.load_vector_db()
-    db.delete_collection()  # This will clear the database
+    db.delete_collection()  
     return {"message": "All documents deleted successfully"}
 
 if __name__ == "__main__":
