@@ -18,16 +18,16 @@ class RAG:
         self.emb_model = self.get_embedding_model(self.emb_model_path)
 
     def load_docs(self, path: str):
-        print(f"📂 Loading documents from: {path}")
+        print(f"Loading documents from: {path}")
         loader = PyPDFDirectoryLoader(path)
         docs = loader.load()
-        print(f"✅ Loaded {len(docs)} documents")
+        print(f"Loaded {len(docs)} documents")
         return docs
     
     def get_embedding_model(self, emb_model):
-        print(f"🧠 Loading embedding model: {emb_model}")
+        print(f"Loading embedding model: {emb_model}")
         model_kwargs = {'device': 'cpu'}
-        encode_kwargs = {'normalize_embeddings': True}  # Set True to compute cosine similarity
+        encode_kwargs = {'normalize_embeddings': True}
         embeddings_model = HuggingFaceEmbeddings(
             model_name=emb_model,
             model_kwargs=model_kwargs,
@@ -36,25 +36,25 @@ class RAG:
         return embeddings_model
     
     def split_docs(self, docs):
-        print(f"✂️ Splitting {len(docs)} documents")
+        print(f"Splitting {len(docs)} documents")
         text_splitter = TokenTextSplitter(chunk_size=500, chunk_overlap=0)
         documents = text_splitter.split_documents(docs)
-        print(f"✅ Split into {len(documents)} chunks")
+        print(f"Split into {len(documents)} chunks")
         return documents
     
     def populate_vector_db(self):
         """Load documents, split them, and store embeddings in ChromaDB."""
         docs = self.load_docs(self.pdf_folder_path)
         if not docs:
-            print("❌ No documents found. Check your PDF folder path.")
+            print("No documents found. Check your PDF folder path.")
             return
         
         documents = self.split_docs(docs)
         if not documents:
-            print("❌ Document splitting failed.")
+            print("Document splitting failed.")
             return
         
-        print("📥 Populating ChromaDB...")
+        print("Populating ChromaDB...")
         db = Chroma.from_documents(documents,
                                    embedding=self.emb_model,
                                    persist_directory=self.vector_store_path)
@@ -63,7 +63,7 @@ class RAG:
     
     def load_vector_db(self):
         """Load embeddings from disk"""
-        print("🔄 Loading ChromaDB from disk...")
+        print("Loading ChromaDB from disk...")
         db = Chroma(persist_directory=self.vector_store_path, embedding_function=self.emb_model)
         return db
     
@@ -77,7 +77,7 @@ rag.populate_vector_db()
 # 🔍 Check if documents are stored correctly
 db = rag.load_vector_db()
 num_docs = db._collection.count()
-print(f"📊 Number of documents in ChromaDB: {num_docs}")
+print(f"Number of documents in ChromaDB: {num_docs}")
 
 if num_docs == 0:
     print("⚠️ Warning: No documents found in ChromaDB. Check your document loading and processing.")
